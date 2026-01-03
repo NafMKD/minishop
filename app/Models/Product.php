@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
@@ -33,5 +34,15 @@ class Product extends Model
             'low_stock_threshold' => 'integer',
         ];
     }
-    
+
+    /**
+     * Get the images for the product.
+     * 
+     * @return HasMany<ProductImage, Product>
+     */
+    public function images(): HasMany
+    {
+        return $this->hasMany(ProductImage::class)->orderBy('sort_order');
+    }
+
 }

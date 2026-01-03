@@ -9,4 +9,7 @@ abstract class Controller
         'ordered',
         'deleted'
     ];
+    public const _DEFAULT_PAGINATION = 10;
+    public const _DEFAULT_FILE_SIZE = 5120;
+    public const _DEFAULT_LOW_STOCK_THRESHOLD = 0;
 }

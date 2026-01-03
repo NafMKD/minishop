@@ -2,11 +2,37 @@
 
 namespace App\Repositories;
 
+use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\ProductImage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class ProductRepository
 {
+    /**
+     * Get all products.
+     * 
+     * @param int|null $perPage
+     * @param array $filters
+     * @return Collection|LengthAwarePaginator
+     */
+    public function all(?int $perPage = null, array $filters = []): Collection|LengthAwarePaginator
+    {
+        $query = Product::query();
+
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        $query->orderBy('created_at', 'desc');
+
+        return $perPage ? $query->paginate($perPage) : $query->get();
+    }
     /**
      * Create a new product.
      *
@@ -15,14 +41,44 @@ class ProductRepository
      */
     public function create(array $data): Product
     {
-        return DB::transaction(function () use ($data) {
-            return Product::create([
+        DB::beginTransaction();
+
+        $storedPaths = [];
+
+        try {
+            $product = Product::create([
                 'name' => $data['name'] ?? null,
                 'price' => $data['price'] ?? null,
                 'stock_quantity' => $data['stock_quantity'] ?? null,
-                'low_stock_threshold' => $data['low_stock_threshold'] ?? null,
+                'low_stock_threshold' => $data['low_stock_threshold'] ?? Controller::_DEFAULT_LOW_STOCK_THRESHOLD,
             ]);
-        });
+
+            if (!empty($data['files'])) {
+                foreach ($data['files'] as $index => $file) {
+                    $path = $file->store("products/{$product->id}", 'public');
+                    $storedPaths[] = $path;
+
+                    ProductImage::create([
+                        'product_id' => $product->id,
+                        'path' => $path,
+                        'sort_order' => $index,
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return $product;
+
+        } catch (Throwable $e) {
+            DB::rollBack();
+
+            foreach ($storedPaths as $path) {
+                Storage::disk('public')->delete($path);
+            }
+
+            throw $e;
+        }
     }
 
     /**
@@ -35,14 +91,50 @@ class ProductRepository
      */
     public function update(Product $product, array $data): Product
     {
-        return DB::transaction(function () use ($product, $data) {
+        DB::beginTransaction();
 
-            $product->update($data);
+        $storedPaths = [];
 
-            return $product->refresh();
-        });
+        try {
+            $product->update([
+                'name' => $data['name'] ?? $product->name,
+                'price' => $data['price'] ?? $product->price,
+                'stock_quantity' => $data['stock_quantity'] ?? $product->stock_quantity,
+                'low_stock_threshold' => $data['low_stock_threshold'] ?? $product->low_stock_threshold,
+            ]);
+
+            if (!empty($data['files'])) {
+                foreach ($product->images as $image) {
+                    Storage::disk('public')->delete($image->path);
+                    $image->delete();
+                }
+
+                foreach ($data['files'] as $index => $file) {
+                    $path = $file->store("products/{$product->id}", 'public');
+                    $storedPaths[] = $path;
+
+                    ProductImage::create([
+                        'product_id' => $product->id,
+                        'path' => $path,
+                        'sort_order' => $index,
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return $product;
+
+        } catch (Throwable $e) {
+            DB::rollBack();
+
+            foreach ($storedPaths as $path) {
+                Storage::disk('public')->delete($path);
+            }
+
+            throw $e;
+        }
     }
-
     /**
      * Soft delete a product.
      *
@@ -53,6 +145,7 @@ class ProductRepository
     public function delete(Product $product): void
     {
         DB::transaction(function () use ($product) {
+            $product->images()->delete();
             $product->delete();
         });
     }

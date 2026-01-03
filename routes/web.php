@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ProductController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -11,9 +12,14 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('admin/dashboard', function () {
+        return Inertia::render('admin/dashboard');
+    })->name('admin.dashboard');
+    // Products
+    Route::get('admin/products', [ProductController::class, 'index'])->name('admin.products');
+    Route::post('admin/products', [ProductController::class, 'store'])->name('admin.products.store');
+    Route::put('admin/products/{product}', [ProductController::class, 'update'])->name('admin.products.update');
+    Route::delete('admin/products/{product}', [ProductController::class, 'destroy'])->name('admin.products.destroy');
 });
 
-require __DIR__.'/settings.php';
+require __DIR__ . '/settings.php';
