@@ -3,7 +3,10 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -48,5 +51,45 @@ class User extends Authenticatable
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Get all carts for the user.
+     * 
+     * @return HasMany<Cart, User>
+     */
+    public function carts(): HasMany
+    {
+        return $this->hasMany(Cart::class);
+    }
+
+    /**
+     * Get the user's current active cart.
+     * 
+     * @return HasOne<Cart, User>
+     */
+    public function activeCart(): HasOne
+    {
+        return $this->hasOne(Cart::class)->where('status', Controller::_CART_STATUSES[0]);
+    }
+
+    /**
+     * Get all orders placed by the user.
+     * 
+     * @return HasMany<Order, User>
+     */
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    /**
+     * Get the audit logs associated with the user.
+     * 
+     * @return HasMany<AuditLog, User>
+     */
+    public function auditLogs(): HasMany
+    {
+        return $this->hasMany(AuditLog::class);
     }
 }
