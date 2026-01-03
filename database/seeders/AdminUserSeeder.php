@@ -11,9 +11,9 @@ class AdminUserSeeder extends Seeder
     public function run(): void
     {
         User::factory()->create([
-            'first_name' => env('ADMIN_NAME'),
-            'email'      => env('ADMIN_EMAIL'),
-            'password'   => Hash::make(env('ADMIN_PASSWORD')),
+            'name' => env('ADMIN_NAME'),
+            'email' => env('ADMIN_EMAIL'),
+            'password' => Hash::make(env('ADMIN_PASSWORD')),
             'is_admin' => true,
         ]);
     }
