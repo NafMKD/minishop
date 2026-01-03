@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use App\Exceptions\RepositoryException;
+use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\Product;
@@ -17,6 +19,14 @@ class OrderRepository
      */
     public function create(array $data): Order
     {
+        if ($data['cart_id']) {
+            $cart = Cart::findOrFail($data['cart_id'])->get();
+
+            if (!$cart) {
+                throw new RepositoryException('Cart not found.');
+            }
+        }
+        
         return DB::transaction(function () use ($data) {
             $order =  Order::create([
                 'user_id' => $data['user_id'] ?? null,

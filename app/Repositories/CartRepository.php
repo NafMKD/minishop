@@ -56,6 +56,10 @@ class CartRepository
     public function delete(Cart $cart): void
     {
         DB::transaction(function () use ($cart) {
+            $cart->update([
+                'status' => Controller::_CART_STATUSES[2]
+            ]);
+
             $cart->delete();
         });
     }
