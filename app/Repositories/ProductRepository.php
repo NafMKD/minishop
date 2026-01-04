@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductImage;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
@@ -33,6 +34,37 @@ class ProductRepository
 
         return $perPage ? $query->paginate($perPage) : $query->get();
     }
+
+    /**
+     * Get for welcome page
+     * 
+     */
+    public function getForWelcomePage(string $search): Paginator
+    {
+        $query = Product::with(['images']);
+
+        if (!empty($search)) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        return $query->orderByDesc('id')
+            ->simplePaginate(12)
+            ->through(function (Product $product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'price' => $product->price,
+                    'stock_quantity' => $product->stock_quantity,
+                    'images' => $product->images->map(function ($image) {
+                        return [
+                            'id' => $image->id,
+                            'url' => Storage::url($image->path),
+                        ];
+                    })->values(),
+                ];
+            });
+    }
+
     /**
      * Create a new product.
      *

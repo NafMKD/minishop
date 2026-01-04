@@ -96,7 +96,7 @@ export default function Index() {
                     />
 
                     <CartTable carts={paginated.data} onView={onView} />
-
+                    <hr />
                     {paginated.links?.length ? (
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div className="text-sm text-muted-foreground">
