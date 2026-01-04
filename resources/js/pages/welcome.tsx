@@ -25,6 +25,8 @@ export default function Welcome({
 }) {
     const { props } = usePage<PageProps>();
     const isAuthenticated = !!props.auth.user;
+    const isAdmin = !!props.auth.user?.is_admin || null;
+    const name = props.auth.user?.name || null;
 
     const [search, setSearch] = useState(props.filters?.search ?? '');
     const [items, setItems] = useState<Product[]>(props.products?.data ?? []);
@@ -107,7 +109,9 @@ export default function Welcome({
             <div className="min-h-screen bg-background">
                 <SiteHeader
                     isAuthenticated={isAuthenticated}
+                    isAdmin={isAdmin}
                     canRegister={canRegister}
+                    name={name}
                 />
 
                 <HeroSearch

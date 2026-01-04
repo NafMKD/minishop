@@ -9,11 +9,19 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { home } from '@/routes';
 import { carts, dashboard, orders, products } from '@/routes/admin';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { LayoutGrid, MonitorCheck, Package, ShoppingCart } from 'lucide-react';
+import {
+    Globe,
+    LayoutGrid,
+    MonitorCheck,
+    Package,
+    ShoppingCart,
+} from 'lucide-react';
 import AppLogo from './app-logo';
+import { NavFooter } from './nav-footer';
 
 const mainNavItems: NavItem[] = [
     {
@@ -38,6 +46,14 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
+const footerNavItems: NavItem[] = [
+    {
+        title: 'Visit Site',
+        href: home(),
+        icon: Globe,
+    },
+];
+
 export function AppSidebar() {
     return (
         <Sidebar collapsible="icon" variant="inset">
@@ -58,6 +74,7 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
+                <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

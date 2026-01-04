@@ -50,17 +50,16 @@ class ProductRepository
         return $query->orderByDesc('id')
             ->simplePaginate(12)
             ->through(function (Product $product) {
+                $firstImage = $product->images->first();
                 return [
                     'id' => $product->id,
                     'name' => $product->name,
                     'price' => $product->price,
                     'stock_quantity' => $product->stock_quantity,
-                    'images' => $product->images->map(function ($image) {
-                        return [
-                            'id' => $image->id,
-                            'url' => Storage::url($image->path),
-                        ];
-                    })->values(),
+                    'image' => $firstImage ? [
+                        'id' => $firstImage->id,
+                        'url' => Storage::url($firstImage->path),
+                    ] : null,
                 ];
             });
     }

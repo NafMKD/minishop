@@ -11,6 +11,7 @@ export type Product = {
     price: string | number;
     stock_quantity: number;
     images?: ProductImage[];
+    image?: ProductImage;
 };
 
 function toNumber(v: string | number) {
@@ -26,7 +27,9 @@ type Props = {
 
 export function ProductCard({ product, isAuthenticated, onAddToCart }: Props) {
     const price = toNumber(product.price).toFixed(2);
-    const imgUrl = product.images?.[0]?.url;
+    const imgUrl = product.images
+        ? product.images?.[0]?.url
+        : product.image?.url || null;
 
     return (
         <div className="group overflow-hidden rounded-2xl border bg-card shadow-sm transition hover:shadow-md">
