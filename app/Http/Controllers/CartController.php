@@ -43,11 +43,23 @@ class CartController extends Controller
 
             if ($cart) $cart->load('items', 'items.product', 'items.product.images');
 
+            if (!$cart) {
+                return Inertia::render('carts/index', [
+                    'cart' => null,
+                    'total_price' => 0,
+                    'total_items' => 0,
+                    'active_cart' => null,
+                ]);
+            }
+
+            $active_cart =  Auth::user()->activeCart;
+            $active_cart->load('items', 'items.product', 'items.product.images');
+
             return Inertia::render('carts/index', [
                 'cart' => $cart,
                 'total_price' => $cart ? $cart->total_price : 0,
                 'total_items' => $cart ? $cart->total_items : 0,
-                'active_cart' => Auth::user() ? (Auth::user()->activeCart ? true : false) : null,
+                'active_cart' => $active_cart,
             ]);
             
         }  catch (Throwable $e) {
@@ -86,6 +98,33 @@ class CartController extends Controller
             return redirect()->back()->with([
                 'status' => 'error',
                 'message' => 'Failed to add item to cart.',
+            ]);
+        }
+    }
+
+    /**
+     * Remove item from cart.
+     * 
+     * @param Request $request
+     * @param Product $product
+     * @return RedirectResponse|Response
+     */
+    public function removeItemToCart(Request $request, Product $product): RedirectResponse|Response
+    {
+        try {
+            $this->carts->removeItem(
+                user: Auth::user(),
+                product: $product,
+            );
+
+            return redirect()->back()->with([
+                'status' => 'success',
+                'message' => 'Item removed from cart successfully.',
+            ]);
+        } catch (Throwable $e) {
+            return redirect()->back()->with([
+                'status' => 'error',
+                'message' => 'Failed to remove item from cart.',
             ]);
         }
     }

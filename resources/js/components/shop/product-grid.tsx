@@ -1,11 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ProductCard, type Product } from './product-card';
+import { Cart } from '@/pages/admin/carts/components/cart-details-modal';
 
 type Props = {
     products: Product[];
     isAuthenticated: boolean;
     nextUrl: string | null;
+    activeCart: Cart | null;
     loadingMore: boolean;
     sentinelRef: React.RefObject<HTMLDivElement | null>;
     onLoadMore: () => void;
@@ -16,6 +18,7 @@ export function ProductGrid({
     products,
     isAuthenticated,
     nextUrl,
+    activeCart,
     loadingMore,
     sentinelRef,
     onLoadMore,
@@ -35,17 +38,22 @@ export function ProductGrid({
             <Separator className="mb-6" />
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {products.map((p) => (
-                    <ProductCard
-                        key={p.id}
-                        product={p}
-                        isAuthenticated={isAuthenticated}
-                        onAddToCart={onAddToCart}
-                    />
-                ))}
+                {products.map((p) => {
+                    const isInActiveCart = (activeCart)  ? !!activeCart?.items?.some(
+                        (item) => item.product_id === p.id,
+                    ) : false;
+                    return (
+                        <ProductCard
+                            key={p.id}
+                            product={p}
+                            isAuthenticated={isAuthenticated}
+                            activeCart={isInActiveCart}
+                            onAddToCart={onAddToCart}
+                        />
+                    );
+                })}
             </div>
 
-            {/* Infinite scroll sentinel */}
             <div ref={sentinelRef} className="h-10" />
 
             <div className="mt-6 flex items-center justify-center">

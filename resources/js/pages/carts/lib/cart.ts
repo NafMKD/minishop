@@ -9,7 +9,7 @@ export function updateCartItemQuantity(itemId: number, quantity: number) {
 }
 
 export function removeCartItem(itemId: number) {
-    router.delete(`/cart/items/${itemId}`, {
+    router.delete(`/carts/items/${itemId}`, {
         preserveScroll: true,
         preserveState: true,
     });

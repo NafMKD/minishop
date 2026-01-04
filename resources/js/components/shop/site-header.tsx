@@ -24,7 +24,7 @@ type Props = {
     isAdmin: boolean | null;
     canRegister?: boolean;
     name: string | null;
-    active_cart?: boolean | null;
+    active_cart?: number | null;
 };
 
 export function SiteHeader({
@@ -104,7 +104,7 @@ export function SiteHeader({
                                 Cart
                                 {active_cart && (
                                     <span className="absolute -top-1 -right-2 inline-flex items-center justify-center rounded-full bg-yellow-400 px-1.5 py-0.5 text-xs leading-none font-bold text-black">
-                                        1
+                                        {active_cart}
                                     </span>
                                 )}
                             </Link>

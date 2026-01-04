@@ -26,7 +26,8 @@ class CartRepository
     {
         $query = Cart::with([
             'user:id,name,email',
-            'items'
+            'items',
+            'items.product:id,name,price',
         ]);
 
         if (!empty($filters['status'])) {
@@ -194,9 +195,9 @@ class CartRepository
      *
      * @param User $user
      * @param Product $product
-     * @return Cart
+     * @return bool
      */
-    public function removeItem(User $user, Product $product): Cart
+    public function removeItem(User $user, Product $product): bool
     {
         return DB::transaction(function () use ($user, $product) {
             $cart = $this->getOrCreateActive($user);
@@ -211,7 +212,14 @@ class CartRepository
                 $item->delete();
             }
 
-            return $cart->refresh()->load(['items.product']);
+            if (!$cart->items()->exists()) {
+                $cart->update([
+                    'status' => Controller::_CART_STATUSES[2]
+                ]);
+                $cart->delete();
+            }
+
+            return true;
         });
     }
 

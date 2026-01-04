@@ -7,6 +7,8 @@ import type { Product } from '@/components/shop/product-card';
 import { ProductGrid } from '@/components/shop/product-grid';
 import { SiteFooter } from '@/components/shop/site-footer';
 import { SiteHeader } from '@/components/shop/site-header';
+import { Cart } from './admin/carts/components/cart-details-modal';
+import { CartItem } from './carts/components/cart-item-card';
 
 type PageProps = SharedData & {
     products: {
@@ -23,6 +25,10 @@ interface PaginatedProducts {
     next_page_url: string | null;
 }
 
+export interface ActiveCart {
+  items: CartItem[];
+}
+
 export default function Welcome({
     canRegister = true,
 }: {
@@ -32,9 +38,7 @@ export default function Welcome({
     const isAuthenticated = !!props.auth.user;
     const isAdmin = !!props.auth.user?.is_admin || null;
     const name = props.auth.user?.name || null;
-    const active_cart = props.auth.user?.active_cart ? true : false;
-
-    console.log('active_cart', active_cart);
+    const active_cart = props.auth.user?.active_cart ? (props.auth.user?.active_cart as ActiveCart).items?.length : null;
     
     const [search, setSearch] = useState(props.filters?.search ?? '');
     const [items, setItems] = useState<Product[]>(props.products?.data ?? []);
@@ -42,6 +46,7 @@ export default function Welcome({
         props.products?.next_page_url ?? null,
     );
     const [loadingMore, setLoadingMore] = useState(false);
+    const activeCart = props.auth.user?.active_cart || null;
 
     const sentinelRef = useRef<HTMLDivElement | null>(null);
 
@@ -140,6 +145,7 @@ export default function Welcome({
                     products={items}
                     isAuthenticated={isAuthenticated}
                     nextUrl={nextUrl}
+                    activeCart={activeCart as Cart | null}
                     loadingMore={loadingMore}
                     sentinelRef={sentinelRef}
                     onLoadMore={loadMore}

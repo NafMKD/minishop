@@ -18,7 +18,9 @@ import {
 export type CartItem = {
     id: number;
     quantity: number;
+    product_id?: number;
     product: {
+        id: number;
         name: string;
         price: string | number;
     };

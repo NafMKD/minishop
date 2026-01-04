@@ -49,6 +49,9 @@ export default function Index() {
 
     const meta = paginated.meta;
 
+    console.log(paginated);
+    
+
     const showingText = useMemo(() => {
         if (!meta) return null;
         const from = (meta.current_page - 1) * meta.per_page + 1;

@@ -34,13 +34,16 @@ class WelcomeController extends Controller
 
         $products = $this->products->getForWelcomePage($search);
 
+        $active_cart =  Auth::user() ? Auth::user()->activeCart : null;
+        if ($active_cart) $active_cart->load('items');
+
         return Inertia::render('welcome', [
             'canRegister' => Features::enabled(Features::registration()),
             'products' => $products,
             'filters' => [
                 'search' => $search,
             ], 
-            'active_cart' => Auth::user() ? (Auth::user()->activeCart ? true : false) : null,
+            'active_cart' => $active_cart,
         ]);
     }
 

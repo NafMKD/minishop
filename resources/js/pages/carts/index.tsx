@@ -19,13 +19,14 @@ import {
     CheckoutConfirmModal,
     parseConfirm,
 } from '@/pages/carts/components/checkout-confirm-modal';
+import { ActiveCart } from '../welcome';
 
 export default function CartPage() {
     const { props } = usePage<PageProps>();
     const isAuthenticated = !!props.auth.user;
     const isAdmin = !!props.auth.user?.is_admin || null;
     const name = props.auth.user?.name || null;
-    const active_cart = props.auth.user?.active_cart ? true : false;
+        const active_cart = props.auth.user?.active_cart ? (props.auth.user?.active_cart as ActiveCart).items?.length : null;
 
     const cart = props.cart;
     const totalAmount = toNumber(props.total_price as string);

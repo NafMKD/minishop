@@ -45,12 +45,12 @@ export function CartItemCard({ item }: { item: CartItem }) {
       if (safeQty === item.quantity) return;
 
       try {
-        await updateCartItemQuantity(item.id, safeQty);
+        await updateCartItemQuantity(item.product.id, safeQty);
       } catch {
         //  toast 
       }
     },
-    [outOfStock, maxQty, item.id, item.quantity]
+    [outOfStock, maxQty, item.product.id, item.quantity]
   );
 
   const onFocus = () => {
@@ -146,7 +146,7 @@ export function CartItemCard({ item }: { item: CartItem }) {
             <Button
                 type="button"
               variant="destructive"
-              onClick={() => removeCartItem(item.id)}
+              onClick={() => removeCartItem(item.product.id)}
               className="rounded-xl"
             >
               <Trash2 className="mr-2 h-4 w-4" />

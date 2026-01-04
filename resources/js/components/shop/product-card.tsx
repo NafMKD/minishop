@@ -22,10 +22,11 @@ function toNumber(v: string | number) {
 type Props = {
     product: Product;
     isAuthenticated: boolean;
+    activeCart: boolean;
     onAddToCart?: (productId: number) => void;
 };
 
-export function ProductCard({ product, isAuthenticated, onAddToCart }: Props) {
+export function ProductCard({ product, activeCart, isAuthenticated, onAddToCart }: Props) {
     const price = toNumber(product.price).toFixed(2);
     const imgUrl = product.images
         ? product.images?.[0]?.path
@@ -67,15 +68,21 @@ export function ProductCard({ product, isAuthenticated, onAddToCart }: Props) {
                 </div>
 
                 <div className="pt-2">
-                    <Button
-                        className="w-full rounded-xl"
-                        disabled={
-                            product.stock_quantity <= 0 || !isAuthenticated
-                        }
-                        onClick={() => onAddToCart?.(product.id)}
-                    >
-                        {isAuthenticated ? 'Add to cart' : 'Login to add'}
-                    </Button>
+                    {activeCart ? (
+                        <div className="text-xs text-muted-foreground">
+                            Item already to cart, update quantity in cart.
+                        </div>
+                    ) : (
+                        <Button
+                            className="w-full rounded-xl"
+                            disabled={
+                                product.stock_quantity <= 0 || !isAuthenticated
+                            }
+                            onClick={() => onAddToCart?.(product.id)}
+                        >
+                            {isAuthenticated ? 'Add to cart' : 'Login to add'}
+                        </Button>
+                    )}
                 </div>
             </div>
         </div>
