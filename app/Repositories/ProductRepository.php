@@ -29,7 +29,7 @@ class ProductRepository
             $query->where('name', 'like', "%{$search}%");
         }
 
-        $query->orderBy('created_at', 'desc');
+        $query->orderByDesc('created_at');
 
         return $perPage ? $query->paginate($perPage) : $query->get();
     }

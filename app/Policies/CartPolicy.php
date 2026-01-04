@@ -9,6 +9,17 @@ use App\Models\User;
 class CartPolicy
 {
     /**
+     * All can view any carts.
+     *
+     * @param User $user
+     * @return bool
+     */
+    public function viewAny(User $user): bool
+    {
+        return true;
+    }
+
+    /**
      * Only the owner can view the cart.
      *
      * @param User $user

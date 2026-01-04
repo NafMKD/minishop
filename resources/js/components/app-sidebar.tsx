@@ -1,4 +1,3 @@
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
@@ -10,10 +9,10 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, products } from '@/routes/admin';
+import { carts, dashboard, products } from '@/routes/admin';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { LayoutGrid, Package } from 'lucide-react';
+import { LayoutGrid, Package, ShoppingCart } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -26,6 +25,11 @@ const mainNavItems: NavItem[] = [
         title: 'Products',
         href: products(),
         icon: Package,
+    },
+    {
+        title: 'Carts',
+        href: carts(),
+        icon: ShoppingCart,
     },
 ];
 
