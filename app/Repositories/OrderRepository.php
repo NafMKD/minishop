@@ -7,10 +7,51 @@ use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
 class OrderRepository
 {
+    /**
+     * Get all carts.
+     * 
+     * @param int|null $perPage
+     * @param array $filters
+     * @return Collection|LengthAwarePaginator
+     */
+    public function all(?int $perPage = null, array $filters = []): Collection|LengthAwarePaginator
+    {
+        $query = Order::with([
+            'user:id,name,email',
+            'items'
+        ]);
+
+        if (!empty($filters['status'])) {
+            $status = $filters['status'];
+            $query->where('status', $status);
+        }
+
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $$query->where(function (Builder $q) use ($search) {
+                if (ctype_digit($search)) {
+                    $q->orWhere('id', (int) $search);
+                }
+
+                $q->orWhereHas('user', function (Builder $uq) use ($search) {
+                    $uq->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('email', 'like', '%' . $search . '%');
+                });
+            });
+        }
+
+        $query->orderByDesc('created_at');
+
+        return $perPage ? $query->paginate($perPage) : $query->get();
+    }
+
     /**
      * Create a new order.
      *
@@ -26,9 +67,9 @@ class OrderRepository
                 throw new RepositoryException('Cart not found.');
             }
         }
-        
+
         return DB::transaction(function () use ($data) {
-            $order =  Order::create([
+            $order = Order::create([
                 'user_id' => $data['user_id'] ?? null,
                 'cart_id' => $data['cart_id'] ?? null,
                 'total_amount' => $data['total_amount'] ?? null,

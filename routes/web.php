@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CartController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -25,6 +26,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Carts
     Route::get('admin/carts', [CartController::class, 'index'])->name('admin.carts');
+
+    // Orders
+    Route::get('admin/orders', [OrderController::class, 'index'])->name('admin.orders');
 });
 
 require __DIR__ . '/settings.php';

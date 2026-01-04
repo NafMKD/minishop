@@ -9,10 +9,10 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { carts, dashboard, products } from '@/routes/admin';
+import { carts, dashboard, orders, products } from '@/routes/admin';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { LayoutGrid, Package, ShoppingCart } from 'lucide-react';
+import { LayoutGrid, MonitorCheck, Package, ShoppingCart } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -30,6 +30,11 @@ const mainNavItems: NavItem[] = [
         title: 'Carts',
         href: carts(),
         icon: ShoppingCart,
+    },
+    {
+        title: 'Orders',
+        href: orders(),
+        icon: MonitorCheck,
     },
 ];
 
