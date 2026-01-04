@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class Cart extends Model
 {
@@ -52,5 +53,29 @@ class Cart extends Model
     public function items(): HasMany
     {
         return $this->hasMany(CartItem::class);
+    }
+
+    /**
+     * Get the total price of items in the cart.
+     * 
+     * @return float
+     */
+    public function getTotalPriceAttribute(): float
+    {
+        return (float) $this->items()
+            ->join('products', 'cart_items.product_id', '=', 'products.id')
+            ->select(DB::raw('SUM(cart_items.quantity * products.price) as total'))
+            ->value('total') ?? 0.0;
+    }
+
+    /**
+     * Get the total number of items in the cart.
+     * 
+     * @return int
+     */
+    public function getTotalItemsAttribute(): int
+    {
+        return (int) $this->items()
+            ->sum('quantity') ?? 0;
     }
 }

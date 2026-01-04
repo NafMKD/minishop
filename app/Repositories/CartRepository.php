@@ -150,7 +150,7 @@ class CartRepository
     }
 
     /**
-     * Add an item to the user's active cart (increment if exists).
+     * Add an item to the user's active cart (update if exists).
      *
      * @param User $user
      * @param Product $product
@@ -172,21 +172,19 @@ class CartRepository
                 ->lockForUpdate()
                 ->first();
 
-            $newQuantity = ($item?->quantity ?? 0) + $quantity;
-
-            $this->assertWithinStock($product, $newQuantity);
+            $this->assertWithinStock($product, $quantity);
 
             if ($item) {
-                $item->update(['quantity' => $newQuantity]);
+                $item->update(['quantity' => $quantity]);
             } else {
                 CartItem::create([
                     'cart_id' => $cart->id,
                     'product_id' => $product->id,
-                    'quantity' => $newQuantity,
+                    'quantity' => $quantity,
                 ]);
             }
 
-            return $cart->refresh()->load(['items.product']);
+            return $cart->refresh()->load(['items','items.product', 'items.product.images']);
         });
     }
 

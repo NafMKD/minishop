@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 
 export type ProductImage = {
     id: number;
-    url: string;
+    path: string;
 };
 
 export type Product = {
@@ -28,8 +28,8 @@ type Props = {
 export function ProductCard({ product, isAuthenticated, onAddToCart }: Props) {
     const price = toNumber(product.price).toFixed(2);
     const imgUrl = product.images
-        ? product.images?.[0]?.url
-        : product.image?.url || null;
+        ? product.images?.[0]?.path
+        : product.image?.path || null;
 
     return (
         <div className="group overflow-hidden rounded-2xl border bg-card shadow-sm transition hover:shadow-md">

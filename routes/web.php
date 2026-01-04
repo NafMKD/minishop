@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CartController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\CartController as UserCartController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -25,6 +26,12 @@ Route::middleware(['auth', 'role:admin', 'verified'])->group(function () {
 
     // Orders
     Route::get('admin/orders', [OrderController::class, 'index'])->name('admin.orders');
+});
+
+Route::middleware(['auth', 'role:user', 'verified'])->group(function () {
+    Route::get('carts', [UserCartController::class, 'getUserActiveCart'])->name('carts');
+    Route::post('carts/{product}', [UserCartController::class, 'addItemToCart'])->name('carts.addItem');
+    Route::put('carts/items/{product}', [UserCartController::class, 'addItemToCart'])->name('carts.updateItem');
 });
 
 require __DIR__ . '/settings.php';

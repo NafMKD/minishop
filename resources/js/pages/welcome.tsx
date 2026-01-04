@@ -18,6 +18,11 @@ type PageProps = SharedData & {
     };
 };
 
+interface PaginatedProducts {
+    data: Product[];
+    next_page_url: string | null;
+}
+
 export default function Welcome({
     canRegister = true,
 }: {
@@ -27,7 +32,10 @@ export default function Welcome({
     const isAuthenticated = !!props.auth.user;
     const isAdmin = !!props.auth.user?.is_admin || null;
     const name = props.auth.user?.name || null;
+    const active_cart = props.auth.user?.active_cart ? true : false;
 
+    console.log('active_cart', active_cart);
+    
     const [search, setSearch] = useState(props.filters?.search ?? '');
     const [items, setItems] = useState<Product[]>(props.products?.data ?? []);
     const [nextUrl, setNextUrl] = useState<string | null>(
@@ -38,11 +46,9 @@ export default function Welcome({
     const sentinelRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
-        // when server returns new props (search change), reset list
         setItems(props.products?.data ?? []);
         setNextUrl(props.products?.next_page_url ?? null);
         setLoadingMore(false);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.products?.data, props.products?.next_page_url]);
 
     const handleSearch = () => {
@@ -71,13 +77,21 @@ export default function Welcome({
                 replace: true,
                 only: ['products', 'filters'],
                 onSuccess: (page) => {
-                    const p = (page.props as any).products;
-                    setItems((prev) => [...prev, ...(p?.data ?? [])]);
-                    setNextUrl(p?.next_page_url ?? null);
+                    const products = (page.props.products ?? undefined) as
+                        | PaginatedProducts
+                        | undefined;
+                    if (!products) return;
+
+                    setItems((prev) => [...prev, ...products.data]);
+                    setNextUrl(products.next_page_url);
                 },
                 onFinish: () => setLoadingMore(false),
             },
         );
+    };
+
+    const handleAddToCart = (productId: number) => {
+        router.post(`/carts/${productId}`, { quantity: 1 });
     };
 
     useEffect(() => {
@@ -112,6 +126,7 @@ export default function Welcome({
                     isAdmin={isAdmin}
                     canRegister={canRegister}
                     name={name}
+                    active_cart={active_cart}
                 />
 
                 <HeroSearch
@@ -128,9 +143,7 @@ export default function Welcome({
                     loadingMore={loadingMore}
                     sentinelRef={sentinelRef}
                     onLoadMore={loadMore}
-                    onAddToCart={(productId) => {
-                        // wire later: router.post('/cart/items', { product_id: productId, quantity: 1 })
-                    }}
+                    onAddToCart={handleAddToCart}
                 />
 
                 <SiteFooter />

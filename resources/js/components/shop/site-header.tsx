@@ -1,10 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { login, logout, register } from '@/routes';
-// import {
-//     cart as cartRoute,
-//     orders as ordersRoute,
-//     profile as profileRoute,
-// } from '@/routes/user';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,6 +6,8 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { login, logout, register } from '@/routes';
+import { carts } from '@/routes/';
 import { dashboard } from '@/routes/admin';
 import { Link } from '@inertiajs/react';
 import {
@@ -28,6 +24,7 @@ type Props = {
     isAdmin: boolean | null;
     canRegister?: boolean;
     name: string | null;
+    active_cart?: boolean | null;
 };
 
 export function SiteHeader({
@@ -35,6 +32,7 @@ export function SiteHeader({
     isAdmin,
     canRegister = true,
     name,
+    active_cart,
 }: Props) {
     const getInitials = (name: string) => {
         if (name.split(' ').length > 1) {
@@ -100,10 +98,15 @@ export function SiteHeader({
                             </Link>
                         </Button>
 
-                        <Button asChild className="gap-2">
-                            <Link href="#">
+                        <Button asChild className="relative gap-2">
+                            <Link href={carts()} className="flex items-center">
                                 <ShoppingCart className="h-4 w-4" />
                                 Cart
+                                {active_cart && (
+                                    <span className="absolute -top-1 -right-2 inline-flex items-center justify-center rounded-full bg-yellow-400 px-1.5 py-0.5 text-xs leading-none font-bold text-black">
+                                        1
+                                    </span>
+                                )}
                             </Link>
                         </Button>
 

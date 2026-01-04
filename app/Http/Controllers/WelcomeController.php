@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Repositories\ProductRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 use Laravel\Fortify\Features;
@@ -38,7 +39,8 @@ class WelcomeController extends Controller
             'products' => $products,
             'filters' => [
                 'search' => $search,
-            ],
+            ], 
+            'active_cart' => Auth::user() ? (Auth::user()->activeCart ? true : false) : null,
         ]);
     }
 
