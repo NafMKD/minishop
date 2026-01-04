@@ -60,31 +60,30 @@ class OrderRepository
      */
     public function create(array $data): Order
     {
-        if ($data['cart_id']) {
-            $cart = Cart::findOrFail($data['cart_id'])->get();
+        $cartId = $data['cart_id'] ?? null;
 
-            if (!$cart) {
-                throw new RepositoryException('Cart not found.');
-            }
+        if (!empty($cartId)) {
+            $cart = Cart::findOrFail($cartId);
+
+            if (!$cart) throw new RepositoryException('Cart not found.');
         }
 
-        return DB::transaction(function () use ($data) {
+        return DB::transaction(function () use ($data, $cartId) {
             $order = Order::create([
-                'user_id' => $data['user_id'] ?? null,
-                'cart_id' => $data['cart_id'] ?? null,
-                'total_amount' => $data['total_amount'] ?? null,
+                'user_id'       => $data['user_id'] ?? null,
+                'cart_id'       => $cartId,
+                'total_amount'  => $data['total_amount'] ?? null,
             ]);
 
-            if ($data['cart_id']) {
+            if (!empty($cartId)) {
                 $items = CartItem::query()
-                    ->where('cart_id', $data['cart_id'])
+                    ->with('product')
+                    ->where('cart_id', $cartId)
                     ->get();
 
-                $order->items()->createMany($items->map(
-                    function ($item) use ($order) {
-                        return $this->addItem($order, $item->product, $item->quantity);
-                    }
-                ));
+                foreach ($items as $item) {
+                    $this->addItem($order, $item->product, (int) $item->quantity);
+                }
             }
 
             return $order->refresh()->load(['items.product']);
@@ -131,15 +130,25 @@ class OrderRepository
      *
      * @return Order
      */
-    public function addItem(Order $order, Product $product, int $quantity): Order
+    public function addItem(Order $order, Product $product, int $quantity): void
     {
-        return DB::transaction(function () use ($order, $product, $quantity) {
-            $order->items()->create([
-                'product_id' => $product->id,
-                'quantity' => $quantity,
-            ]);
+        if ($product->stock_quantity < $quantity) {
+            throw new RepositoryException('Requested quantity exceeds available stock.');
+        }
 
-            return $order->refresh();
-        });
+        $order->items()->create([
+            'product_id' => $product->id,
+            'quantity'   => $quantity,
+            'unit_price' => $product->price,
+        ]);
+
+        // Update stock (simple version)
+        $product->update([
+            'stock_quantity' => $product->stock_quantity - $quantity,
+        ]);
+
+        if ($product->stock_quantity <= $product->low_stock_threshold) {
+            // TODO: notification
+        }
     }
 }

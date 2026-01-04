@@ -16,5 +16,5 @@ export function removeCartItem(itemId: number) {
 }
 
 export function checkoutCart() {
-    router.post(`/cart/checkout`, {}, { preserveScroll: true });
+    router.post(`/carts/checkout`, {}, { preserveScroll: true });
 }

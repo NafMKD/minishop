@@ -6,6 +6,7 @@ use App\Exceptions\RepositoryException;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\CartItem;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -213,10 +214,7 @@ class CartRepository
             }
 
             if (!$cart->items()->exists()) {
-                $cart->update([
-                    'status' => Controller::_CART_STATUSES[2]
-                ]);
-                $cart->delete();
+                $this->delete($cart);
             }
 
             return true;
@@ -235,5 +233,40 @@ class CartRepository
         if ($requestedQuantity > $product->stock_quantity) {
             throw new RepositoryException('Requested quantity exceeds available stock.');
         }
+    }
+
+    /**
+     * Checkout active cart.
+     * 
+     * @param Cart $cart
+     * @return Order
+     */
+    public function checkoutCart(Cart $cart): Order
+    {
+        if ($cart->status !== Controller::_CART_STATUSES[0]) {
+            throw new RepositoryException('Only active carts can be checked out.');
+        }
+
+        if ($cart->items->isEmpty()) {
+            throw new RepositoryException('Cannot checkout an empty cart.');
+        }
+
+        $orderRepository = new OrderRepository();
+
+        return DB::transaction(function () use ($orderRepository, $cart) {
+            $this->markAsOrdered($cart);
+
+            $data = [
+                'user_id' => $cart->user_id,
+                'cart_id' => $cart->id,
+                'total_amount' => $cart->items->sum(function (CartItem $item) {
+                    return $item->quantity * $item->product->price;
+                }),
+            ];
+
+            $order = $orderRepository->create($data);
+
+            return $order;
+        });
     }
 }

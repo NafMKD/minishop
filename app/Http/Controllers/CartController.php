@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cart;
 use App\Models\Product;
-use App\Models\User;
 use App\Repositories\CartRepository;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -125,6 +122,43 @@ class CartController extends Controller
             return redirect()->back()->with([
                 'status' => 'error',
                 'message' => 'Failed to remove item from cart.',
+            ]);
+        }
+    }
+
+    /**
+     * Checkout active cart.
+     * 
+     * @param Request $request
+     * @return RedirectResponse|Response
+     * @throws Throwable
+     */
+    public function checkOutActiveCart(Request $request): RedirectResponse|Response
+    {
+        try {
+            $cart = Auth::user()->activeCart;
+            if (!$cart) {
+                return redirect()->back()->with([
+                    'status' => 'error',
+                    'message' => 'No active cart to checkout.',
+                ]);
+            }
+
+            $order = $this->carts->checkoutCart(
+                cart: $cart,
+            );
+
+            Log::info("Cart ID {$cart->id} checked out successfully. Order ID: {$order->id}");
+
+            return redirect()->back()->with([
+                'status' => 'success',
+                'message' => 'Checkout completed successfully.',
+            ]);
+        } catch (Throwable $e) {
+            Log::error("Failed to checkout cart: " . $e->getMessage());
+            return redirect()->back()->with([
+                'status' => 'error',
+                'message' => 'Failed to checkout cart.',
             ]);
         }
     }

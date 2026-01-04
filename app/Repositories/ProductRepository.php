@@ -154,7 +154,7 @@ class ProductRepository
 
             DB::commit();
 
-            return $product;
+            return $product->refresh();
 
         } catch (Throwable $e) {
             DB::rollBack();

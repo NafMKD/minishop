@@ -47,10 +47,7 @@ export default function Index() {
     const [selectedCart, setSelectedCart] = useState<Cart | null>(null);
     const [detailsOpen, setDetailsOpen] = useState(false);
 
-    const meta = paginated.meta;
-
-    console.log(paginated);
-    
+    const meta = paginated.meta;    
 
     const showingText = useMemo(() => {
         if (!meta) return null;
