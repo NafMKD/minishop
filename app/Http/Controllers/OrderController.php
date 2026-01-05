@@ -7,7 +7,6 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 use Throwable;
@@ -41,7 +40,6 @@ class OrderController extends Controller
                 'orders' => $orders,
             ]);
         } catch (Throwable $e) {
-            Log::error("Failed to get orders for user: " . $e->getMessage());
             return redirect()->back()->with([
                 'status' => 'error',
                 'message' => 'An unexpected error occurred.',

@@ -34,7 +34,7 @@ export default function OrdersPage() {
       />
 
       <main className="mx-auto max-w-6xl px-4 py-8">
-        <OrdersIntro totalOrders={initial?.total ?? initial?.data?.length ?? 0} />
+        <OrdersIntro />
 
         <Separator className="mb-6" />
 

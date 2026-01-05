@@ -18,6 +18,7 @@ export function formatDate(input?: string | null) {
     year: 'numeric',
     month: 'short',
     day: '2-digit',
+    timeZone: 'UTC',
   });
 }
 

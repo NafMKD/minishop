@@ -31,11 +31,11 @@ Route::middleware(['auth', 'role:admin', 'verified'])->group(function () {
 Route::middleware(['auth', 'role:user', 'verified'])->group(function () {
     // User Cart Routes
     Route::prefix('carts')->group(function () {
-        Route::get('carts', [UserCartController::class, 'getUserActiveCart'])->name('carts');
-        Route::post('carts/checkout/{cart}', [UserCartController::class, 'checkOutActiveCart'])->name('carts.checkout');
-        Route::post('carts/{product}', [UserCartController::class, 'addItemToCart'])->name('carts.addItem');
-        Route::put('carts/items/{product}', [UserCartController::class, 'addItemToCart'])->name('carts.updateItem');
-        Route::delete('carts/items/{product}', [UserCartController::class, 'removeItemToCart'])->name('carts.removeItem');
+        Route::get('/', [UserCartController::class, 'getUserActiveCart'])->name('carts');
+        Route::post('checkout', [UserCartController::class, 'checkOutActiveCart'])->name('carts.checkout');
+        Route::post('{product}', [UserCartController::class, 'addItemToCart'])->name('carts.addItem');
+        Route::put('items/{product}', [UserCartController::class, 'addItemToCart'])->name('carts.updateItem');
+        Route::delete('items/{product}', [UserCartController::class, 'removeItemToCart'])->name('carts.removeItem');
     });
 
     // User Orders Routes

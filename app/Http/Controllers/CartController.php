@@ -9,7 +9,6 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 use Throwable;
@@ -134,10 +133,9 @@ class CartController extends Controller
      * @return RedirectResponse|Response
      * @throws Throwable
      */
-    public function checkOutActiveCart(Request $request, Cart $cart): RedirectResponse|Response
+    public function checkOutActiveCart(Request $request): RedirectResponse|Response
     {
         try {
-            $this->authorize('checkout', [Auth::user(), Cart::class]);
             $cart = Auth::user()->activeCart;
             if (!$cart) {
                 return redirect()->back()->with([
@@ -150,14 +148,11 @@ class CartController extends Controller
                 cart: $cart,
             );
 
-            Log::info("Cart ID {$cart->id} checked out successfully. Order ID: {$order->id}");
-
             return redirect()->back()->with([
                 'status' => 'success',
                 'message' => 'Checkout completed successfully.',
             ]);
         } catch (Throwable $e) {
-            Log::error("Failed to checkout cart: " . $e->getMessage());
             return redirect()->back()->with([
                 'status' => 'error',
                 'message' => 'Failed to checkout cart.',

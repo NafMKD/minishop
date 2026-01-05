@@ -1,7 +1,7 @@
 import { Link } from "@inertiajs/react";
 import { ArrowLeft } from "lucide-react";
 
-export function OrdersIntro({ totalOrders }: { totalOrders: number }) {
+export function OrdersIntro() {
   return (
     <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
       <div>
@@ -16,11 +16,6 @@ export function OrdersIntro({ totalOrders }: { totalOrders: number }) {
         <p className="text-sm text-muted-foreground">
           Track delivery, view invoices, and reorder your favorites.
         </p>
-      </div>
-
-      <div className="rounded-lg border bg-card px-3 py-2 text-sm">
-        <span className="text-muted-foreground">Total:</span>{' '}
-        <span className="font-medium">{totalOrders}</span>
       </div>
     </div>
   );

@@ -54,12 +54,4 @@ class CartPolicy
     {
         return $cart->user_id === $user->id && $cart->status === Controller::_CART_STATUSES[0];
     }
-
-    /**
-     * Only the owner can checkout the cart.
-     */
-    public function checkout(User $user, Cart $cart): bool
-    {
-        return $cart->user_id === $user->id && $cart->status === Controller::_CART_STATUSES[0];
-    }
 }

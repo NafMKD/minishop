@@ -7,9 +7,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class SendDailySalesReport implements ShouldQueue

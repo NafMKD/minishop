@@ -10,7 +10,6 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -110,8 +109,6 @@ class ProductController extends Controller
     {
         try {
             $this->authorize('update', $product);
-
-            Log::error('images', $request->all());
 
             $data = $request->validate([
                 'name' => 'required|string|max:255',

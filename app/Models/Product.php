@@ -20,6 +20,7 @@ class Product extends Model
         'price',
         'stock_quantity',
         'low_stock_threshold',
+        'low_stock_notified_at',
     ];
 
     /**
