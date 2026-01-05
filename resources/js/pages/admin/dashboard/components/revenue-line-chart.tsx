@@ -38,7 +38,7 @@ export function RevenueLineChart({ data }: { data: OrdersByDayPoint[] }) {
         <Line
           type="monotone"
           dataKey="revenue"
-          stroke="hsl(var(--primary))"
+          stroke="#8884d8"
           strokeWidth={2}
           dot={false}
         />

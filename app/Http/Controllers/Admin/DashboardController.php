@@ -49,7 +49,7 @@ class DashboardController extends Controller
                 ->select('id', 'user_id', 'total_amount', 'created_at')
                 ->with('user:id,name')
                 ->latest()
-                ->limit(10)
+                ->limit(6)
                 ->get()
                 ->map(fn($o) => [
                     'id' => $o->id,

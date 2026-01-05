@@ -34,7 +34,6 @@ export default function Dashboard() {
       <Head title="Dashboard" />
 
       <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-        {/* KPI cards */}
         <div className="grid gap-4 md:grid-cols-4">
           <KpiCard
             title="Total Orders"
@@ -62,12 +61,10 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Charts */}
         <div className="min-h-[420px]">
           <RevenueTrendCard data={ordersByDay} />
         </div>
 
-        {/* Recent orders table */}
         <RecentOrdersCard orders={recentOrders} />
       </div>
     </AppLayout>
