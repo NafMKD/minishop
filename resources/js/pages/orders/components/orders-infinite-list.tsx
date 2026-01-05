@@ -1,56 +1,70 @@
 import { router } from '@inertiajs/react';
-import { useEffect, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import type { Order, Paginated } from '@/pages/orders/lib/types';
 import { OrderCard } from './order-card';
-import { OrdersLoading } from './orders-loading';
 import { OrderDetailsModal } from './order-details-modal';
+import { Button } from '@/components/ui/button';
+
+function PaginationControls({
+  prevUrl,
+  nextUrl,
+  loading,
+  onPrev,
+  onNext,
+  pageLabel,
+}: {
+  prevUrl: string | null;
+  nextUrl: string | null;
+  loading: boolean;
+  onPrev: () => void;
+  onNext: () => void;
+  pageLabel?: string | null;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <Button type="button" variant="outline" disabled={!prevUrl || loading} onClick={onPrev}>
+        <ChevronLeft className="mr-2 h-4 w-4" />
+        Previous
+      </Button>
+
+      {pageLabel ? <div className="text-sm text-muted-foreground">{pageLabel}</div> : <div />}
+
+      <Button type="button" variant="outline" disabled={!nextUrl || loading} onClick={onNext}>
+        Next
+        <ChevronRight className="ml-2 h-4 w-4" />
+      </Button>
+    </div>
+  );
+}
 
 export function OrdersInfiniteList({ initial }: { initial: Paginated<Order> }) {
-  const [orders, setOrders] = useState<Order[]>(initial.data);
-  const [nextUrl, setNextUrl] = useState<string | null>(initial.next_page_url ?? null);
-  const [loading, setLoading] = useState(false);
-  const [done, setDone] = useState(!initial.next_page_url);
+  // initialize once from initial
+  const [orders, setOrders] = useState<Order[]>(() => initial.data);
+  const [nextUrl, setNextUrl] = useState<string | null>(() => initial.next_page_url ?? null);
+  const [prevUrl, setPrevUrl] = useState<string | null>(() => initial.prev_page_url ?? null);
 
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
-  const fetchedUrlsRef = useRef<Set<string>>(new Set());
+  const [loading, setLoading] = useState(false);
 
   const [selected, setSelected] = useState<Order | null>(null);
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    setOrders(initial.data);
-    setNextUrl(initial.next_page_url ?? null);
-    setDone(!initial.next_page_url);
-    fetchedUrlsRef.current.clear();
-  }, [initial.data, initial.next_page_url]);
+  const listTopRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (!sentinelRef.current) return;
+  const pageLabel = useMemo(() => {
+    const p = initial.current_page;
+    const last = initial.last_page;
+    return p && last ? `Page ${p} of ${last}` : null;
+  }, [initial.current_page, initial.last_page]);
 
-    const el = sentinelRef.current;
-    const io = new IntersectionObserver(
-      (entries) => {
-        const hit = entries.some((e) => e.isIntersecting);
-        if (hit) void loadMore();
-      },
-      { root: null, rootMargin: '800px 0px', threshold: 0 }
-    );
-
-    io.observe(el);
-    return () => io.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nextUrl, loading, done]);
-
-  const loadMore = async () => {
-    if (!nextUrl || loading || done) return;
-    if (fetchedUrlsRef.current.has(nextUrl)) return;
+  const go = (url: string | null) => {
+    if (!url || loading) return;
 
     setLoading(true);
-    fetchedUrlsRef.current.add(nextUrl);
 
     router.get(
-      nextUrl,
+      url,
       {},
       {
         preserveScroll: true,
@@ -58,26 +72,14 @@ export function OrdersInfiniteList({ initial }: { initial: Paginated<Order> }) {
         replace: true,
         only: ['orders'],
         onSuccess: (page) => {
-          const incoming = page.props.orders as Paginated<Order> | null;
+          const incoming = page.props.orders as Paginated<Order> | undefined;
+          if (!incoming) return;
 
-          if (!incoming) {
-            setDone(true);
-            setNextUrl(null);
-            return;
-          }
+          setOrders(incoming.data);
+          setNextUrl(incoming.next_page_url ?? null);
+          setPrevUrl(incoming.prev_page_url ?? null);
 
-          setOrders((prev) => {
-            const seen = new Set(prev.map((o) => o.id));
-            const merged = [...prev];
-            for (const o of incoming.data) {
-              if (!seen.has(o.id)) merged.push(o);
-            }
-            return merged;
-          });
-
-          const n = incoming.next_page_url ?? null;
-          setNextUrl(n);
-          setDone(!n);
+          listTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         },
         onFinish: () => setLoading(false),
       }
@@ -86,7 +88,7 @@ export function OrdersInfiniteList({ initial }: { initial: Paginated<Order> }) {
 
   return (
     <>
-      <div className="space-y-3">
+      <div ref={listTopRef} className="space-y-3">
         {orders.map((order) => (
           <OrderCard
             key={order.id}
@@ -98,15 +100,14 @@ export function OrdersInfiniteList({ initial }: { initial: Paginated<Order> }) {
           />
         ))}
 
-        {loading && <OrdersLoading />}
-
-        {!loading && done && (
-          <div className="rounded-lg border bg-card px-4 py-3 text-sm text-muted-foreground">
-            You’re all caught up.
-          </div>
-        )}
-
-        <div ref={sentinelRef} />
+        <PaginationControls
+          prevUrl={prevUrl}
+          nextUrl={nextUrl}
+          loading={loading}
+          onPrev={() => go(prevUrl)}
+          onNext={() => go(nextUrl)}
+          pageLabel={pageLabel}
+        />
       </div>
 
       <OrderDetailsModal

@@ -62,6 +62,23 @@ export default function Index() {
 
     const meta = paginated.meta;
 
+    const minimalLinks = useMemo(() => {
+        const links = paginated.links ?? [];
+        if (!links.length) return [];
+
+        const prev = links[0];
+        const next = links[links.length - 1];
+        const numeric = links.filter((l) => /^\d+$/.test(l.label));
+        const firstPage = numeric[0];
+        const lastPage = numeric[numeric.length - 1];
+
+        const out = [prev, firstPage];
+        if (lastPage && firstPage?.label !== lastPage.label) out.push(lastPage);
+        out.push(next);
+
+        return out.filter(Boolean);
+    }, [paginated.links]);
+
     const showingText = useMemo(() => {
         if (!meta) return null;
         const from = (meta.current_page - 1) * meta.per_page + 1;
@@ -143,7 +160,7 @@ export default function Index() {
                             </div>
 
                             <ProductPagination
-                                links={paginated.links}
+                                links={minimalLinks}
                                 onNavigate={(url) => goTo(url)}
                             />
                         </div>

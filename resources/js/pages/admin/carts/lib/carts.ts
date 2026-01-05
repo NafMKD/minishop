@@ -20,5 +20,16 @@ export function listCarts(url: string, params: CartListParams = {}) {
 }
 
 export function goTo(url: string) {
-    router.get(url, {}, { preserveState: true, replace: true });
+    const current = new URL(window.location.href);
+    const target = new URL(url, window.location.origin);
+
+    const merged = new URLSearchParams(current.search);
+
+    target.searchParams.forEach((value, key) => {
+        merged.set(key, value);
+    });
+
+    target.search = merged.toString();
+
+    router.get(target.toString(), {}, { preserveState: true, replace: true });
 }

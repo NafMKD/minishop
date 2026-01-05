@@ -1,6 +1,6 @@
 import { type SharedData } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { HeroSearch } from '@/components/shop/hero-search';
 import type { Product } from '@/components/shop/product-card';
@@ -14,19 +14,15 @@ type PageProps = SharedData & {
     products: {
         data: Product[];
         next_page_url: string | null;
+        prev_page_url: string | null;
+        current_page?: number;
+        last_page?: number;
     };
-    filters?: {
-        search?: string;
-    };
+    filters?: { search?: string };
 };
 
-interface PaginatedProducts {
-    data: Product[];
-    next_page_url: string | null;
-}
-
 export interface ActiveCart {
-  items: CartItem[];
+    items: CartItem[];
 }
 
 export default function Welcome({
@@ -35,26 +31,24 @@ export default function Welcome({
     canRegister?: boolean;
 }) {
     const { props } = usePage<PageProps>();
+
     const isAuthenticated = !!props.auth.user;
     const isAdmin = !!props.auth.user?.is_admin || null;
     const name = props.auth.user?.name || null;
-    const active_cart = props.auth.user?.active_cart ? (props.auth.user?.active_cart as ActiveCart).items?.length : null;
-    
+    const active_cart = props.auth.user?.active_cart
+        ? (props.auth.user?.active_cart as ActiveCart).items?.length
+        : null;
+
     const [search, setSearch] = useState(props.filters?.search ?? '');
-    const [items, setItems] = useState<Product[]>(props.products?.data ?? []);
-    const [nextUrl, setNextUrl] = useState<string | null>(
-        props.products?.next_page_url ?? null,
-    );
-    const [loadingMore, setLoadingMore] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const listTopRef = useRef<HTMLDivElement | null>(null);
+
     const activeCart = props.auth.user?.active_cart || null;
 
-    const sentinelRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        setItems(props.products?.data ?? []);
-        setNextUrl(props.products?.next_page_url ?? null);
-        setLoadingMore(false);
-    }, [props.products?.data, props.products?.next_page_url]);
+    const items = props.products?.data ?? [];
+    const nextUrl = props.products?.next_page_url ?? null;
+    const prevUrl = props.products?.prev_page_url ?? null;
 
     const handleSearch = () => {
         router.get(
@@ -69,28 +63,26 @@ export default function Welcome({
         router.get('/', {}, { preserveState: false, replace: true });
     };
 
-    const loadMore = () => {
-        if (!nextUrl || loadingMore) return;
+    const goTo = (url: string | null) => {
+        if (!url || loading) return;
 
-        setLoadingMore(true);
+        setLoading(true);
 
         router.get(
-            nextUrl,
+            url,
             {},
             {
                 preserveState: true,
+                preserveScroll: true,
                 replace: true,
                 only: ['products', 'filters'],
-                onSuccess: (page) => {
-                    const products = (page.props.products ?? undefined) as
-                        | PaginatedProducts
-                        | undefined;
-                    if (!products) return;
-
-                    setItems((prev) => [...prev, ...products.data]);
-                    setNextUrl(products.next_page_url);
+                onSuccess: () => {
+                    listTopRef.current?.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start',
+                    });
                 },
-                onFinish: () => setLoadingMore(false),
+                onFinish: () => setLoading(false),
             },
         );
     };
@@ -99,31 +91,9 @@ export default function Welcome({
         router.post(`/carts/${productId}`, { quantity: 1 });
     };
 
-    useEffect(() => {
-        const el = sentinelRef.current;
-        if (!el) return;
-
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0]?.isIntersecting) loadMore();
-            },
-            { root: null, rootMargin: '200px', threshold: 0.1 },
-        );
-
-        observer.observe(el);
-        return () => observer.disconnect();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [sentinelRef.current, nextUrl, loadingMore]);
-
     return (
         <>
-            <Head title="Shop">
-                <link rel="preconnect" href="https://fonts.bunny.net" />
-                <link
-                    href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600"
-                    rel="stylesheet"
-                />
-            </Head>
+            <Head title="Shop" />
 
             <div className="min-h-screen bg-background">
                 <SiteHeader
@@ -141,14 +111,17 @@ export default function Welcome({
                     onReset={handleReset}
                 />
 
+                <div ref={listTopRef} />
+
                 <ProductGrid
                     products={items}
                     isAuthenticated={isAuthenticated}
                     nextUrl={nextUrl}
+                    prevUrl={prevUrl}
                     activeCart={activeCart as Cart | null}
-                    loadingMore={loadingMore}
-                    sentinelRef={sentinelRef}
-                    onLoadMore={loadMore}
+                    loading={loading}
+                    onNext={() => goTo(nextUrl)}
+                    onPrev={() => goTo(prevUrl)}
                     onAddToCart={handleAddToCart}
                 />
 

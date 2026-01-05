@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 
 import type { Order } from '@/pages/orders/lib/types';
 import { formatDate, money, toNumber } from '../lib/format';
+import { DialogDescription } from '@radix-ui/react-dialog';
 
 export function OrderDetailsModal({
   open,
@@ -34,6 +35,7 @@ export function OrderDetailsModal({
               Order {order.number ? `#${order.number}` : `#${order.id}`}
             </span>
           </DialogTitle>
+          <DialogDescription></DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4">

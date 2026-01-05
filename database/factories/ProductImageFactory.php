@@ -19,7 +19,7 @@ class ProductImageFactory extends Factory
     {
         return [
             'product_id' => Product::factory(), 
-            'path' => 'products/' . $this->faker->image('storage/app/public/products', 640, 480, null, false),
+            'path' => 'products/1/6uhPJf6ei0DfaPZBEyd9HHkP3sH8PKM6ndhCbX9F.jpg',
             'sort_order' => $this->faker->numberBetween(1, 5),
         ];
     }

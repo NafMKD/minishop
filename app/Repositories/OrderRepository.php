@@ -72,7 +72,7 @@ class OrderRepository
             ])
             ->orderByDesc('created_at');
 
-        return $orders->paginate(12);
+        return $orders->paginate(6);
     }
 
     /**

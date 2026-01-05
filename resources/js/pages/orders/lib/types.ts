@@ -34,6 +34,8 @@ export type Paginated<T> = {
   total?: number;
   per_page?: number;
   current_page?: number;
+  prev_page_url: string | null;
+  last_page?: number
 };
 
 export type OrdersPageProps = {
