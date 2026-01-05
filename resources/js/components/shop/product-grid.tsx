@@ -7,6 +7,7 @@ import { ProductCard, type Product } from './product-card';
 type Props = {
     products: Product[];
     isAuthenticated: boolean;
+    isAdmin: boolean | null;
     nextUrl: string | null;
     prevUrl: string | null;
     activeCart: Cart | null;
@@ -61,6 +62,7 @@ function Pager({
 export function ProductGrid({
     products,
     isAuthenticated,
+    isAdmin,
     nextUrl,
     prevUrl,
     activeCart,
@@ -103,6 +105,7 @@ export function ProductGrid({
                             key={p.id}
                             product={p}
                             isAuthenticated={isAuthenticated}
+                            isAdmin={isAdmin}
                             activeCart={isInActiveCart}
                             onAddToCart={onAddToCart}
                         />

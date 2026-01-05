@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 use Throwable;
@@ -77,6 +78,13 @@ class CartController extends Controller
     public function addItemToCart(Request $request, Product $product): RedirectResponse|Response
     {
         try {
+            if (Auth::user()->is_admin) {
+                return redirect()->back()->with([
+                    'status' => 'error',
+                    'message' => 'You must be user to add item to cart.',
+                ]);
+            }
+
             $data = $request->validate([
                 'quantity' => 'required|integer|min:1',
             ]);
@@ -92,6 +100,7 @@ class CartController extends Controller
                 'message' => 'Item added to cart successfully.',
             ]);
         } catch (Throwable $e) {
+            Log::error('Error adding item to cart: ' . $e->getMessage());
             return redirect()->back()->with([
                 'status' => 'error',
                 'message' => 'Failed to add item to cart.',

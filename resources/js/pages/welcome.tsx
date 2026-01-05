@@ -116,6 +116,7 @@ export default function Welcome({
                 <ProductGrid
                     products={items}
                     isAuthenticated={isAuthenticated}
+                    isAdmin={isAdmin}
                     nextUrl={nextUrl}
                     prevUrl={prevUrl}
                     activeCart={activeCart as Cart | null}
