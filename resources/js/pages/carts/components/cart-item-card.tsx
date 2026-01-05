@@ -93,7 +93,7 @@ export function CartItemCard({ item }: { item: CartItem }) {
           <div className="h-20 w-20 overflow-hidden rounded-2xl bg-muted">
             {item.product.images  ? (
               <img
-                src={`storage/${item.product.images[0].path}`}
+                src={item.product.images[0].path}
                 alt={item.product.name}
                 className="h-full w-full object-cover"
                 loading="lazy"

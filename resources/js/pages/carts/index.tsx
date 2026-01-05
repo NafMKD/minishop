@@ -26,7 +26,7 @@ export default function CartPage() {
     const isAuthenticated = !!props.auth.user;
     const isAdmin = !!props.auth.user?.is_admin || null;
     const name = props.auth.user?.name || null;
-        const active_cart = props.auth.user?.active_cart ? (props.auth.user?.active_cart as ActiveCart).items?.length : null;
+    const active_cart = props.auth.user?.active_cart ? (props.auth.user?.active_cart as ActiveCart).items?.length : null;
 
     const cart = props.cart;
     const totalAmount = toNumber(props.total_price as string);
@@ -96,7 +96,7 @@ export default function CartPage() {
                     onCancel={() => setConfirmOpen(false)}
                     onPlaceOrder={() => {
                         setConfirmOpen(false);
-                        checkoutCart();
+                        checkoutCart(cart?.id ?? 0);
                     }}
                 />
             </div>

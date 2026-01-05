@@ -60,7 +60,7 @@ class ProductRepository
                     'stock_quantity' => $product->stock_quantity,
                     'image' => $firstImage ? [
                         'id' => $firstImage->id,
-                        'path' => Storage::url($firstImage->path),
+                        'path' => $firstImage->path,
                     ] : null,
                 ];
             });

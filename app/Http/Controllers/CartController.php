@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use App\Models\Product;
 use App\Repositories\CartRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -133,9 +134,10 @@ class CartController extends Controller
      * @return RedirectResponse|Response
      * @throws Throwable
      */
-    public function checkOutActiveCart(Request $request): RedirectResponse|Response
+    public function checkOutActiveCart(Request $request, Cart $cart): RedirectResponse|Response
     {
         try {
+            $this->authorize('checkout', [Auth::user(), Cart::class]);
             $cart = Auth::user()->activeCart;
             if (!$cart) {
                 return redirect()->back()->with([
