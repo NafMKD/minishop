@@ -38,7 +38,7 @@ class OrderRepository
 
         if (!empty($filters['search'])) {
             $search = $filters['search'];
-            $$query->where(function (Builder $q) use ($search) {
+            $query->where(function (Builder $q) use ($search) {
                 if (ctype_digit($search)) {
                     $q->orWhere('id', (int) $search);
                 }

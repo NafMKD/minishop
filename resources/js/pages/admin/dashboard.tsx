@@ -6,11 +6,11 @@ import { Head, usePage } from '@inertiajs/react';
 import { ShoppingCart, DollarSign, Package, Users } from 'lucide-react';
 
 import type { DashboardCounts, DashboardProps } from '@/pages/admin/dashboard/lib/types';
-import { money } from '@/pages/admin/dashboard/lib/format';
 
 import { KpiCard } from '@/pages/admin/dashboard/components/kpi-card';
 import { RevenueTrendCard } from '@/pages/admin/dashboard/components/revenue-trend-card';
 import { RecentOrdersCard } from '@/pages/admin/dashboard/components/recent-orders-card';
+import { money } from '../orders/lib/format';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Dashboard', href: dashboardRoute().url },
