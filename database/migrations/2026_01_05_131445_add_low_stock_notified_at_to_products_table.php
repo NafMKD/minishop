@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->timestamp('low_stock_notified_at')->nullable()->index();
+            $table->timestamp('low_stock_notified_at')->nullable()->index()->after('low_stock_threshold');
         });
     }
 
