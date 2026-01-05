@@ -5,6 +5,7 @@ import { removeCartItem, updateCartItemQuantity } from '@/pages/carts/lib/cart';
 import { Trash2 } from 'lucide-react';
 import { SharedData } from '@/types';
 import { Product } from '@/components/shop/product-card';
+import { toNumber } from '@/pages/orders/lib/format';
 
 export type CartItem = {
   id: number;
@@ -15,11 +16,6 @@ export type CartItem = {
 export type PageProps = SharedData & {
     cart: { id: number; status: string; items: CartItem[] } | null;
 };
-
-export function toNumber(v: string | number) {
-    const n = typeof v === 'number' ? v : Number(v);
-    return Number.isFinite(n) ? n : 0;
-}
 
 const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n));
 

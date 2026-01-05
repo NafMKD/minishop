@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { toNumber } from '@/pages/orders/lib/format';
 
 export type ProductImage = {
     id: number;
@@ -13,11 +14,6 @@ export type Product = {
     images?: ProductImage[];
     image?: ProductImage;
 };
-
-function toNumber(v: string | number) {
-    const n = typeof v === 'number' ? v : Number(v);
-    return Number.isFinite(n) ? n : 0;
-}
 
 type Props = {
     product: Product;

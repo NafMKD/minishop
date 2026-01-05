@@ -7,7 +7,6 @@ import { CartHead } from '@/pages/carts/components/cart-head';
 import { CartIntro } from '@/pages/carts/components/cart-intro';
 import {
     type PageProps,
-    toNumber,
 } from '@/pages/carts/components/cart-item-card';
 import { CartItemsList } from '@/pages/carts/components/cart-items-list';
 import { CartLayout } from '@/pages/carts/components/cart-layout';
@@ -20,6 +19,7 @@ import {
     parseConfirm,
 } from '@/pages/carts/components/checkout-confirm-modal';
 import { ActiveCart } from '../welcome';
+import { toNumber } from '../orders/lib/format';
 
 export default function CartPage() {
     const { props } = usePage<PageProps>();

@@ -14,6 +14,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { toNumber } from '@/pages/orders/lib/format';
 
 export type OrderItem = {
     id: number;
@@ -42,11 +43,6 @@ type Props = {
     onOpenChange: (open: boolean) => void;
     order: Order | null;
 };
-
-function toNumber(v: string | number | null | undefined) {
-    const n = typeof v === 'number' ? v : Number(v ?? 0);
-    return Number.isFinite(n) ? n : 0;
-}
 
 export function OrderDetailsModal({ open, onOpenChange, order }: Props) {
     const items = order?.items ?? [];

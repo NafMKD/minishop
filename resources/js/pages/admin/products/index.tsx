@@ -21,11 +21,11 @@ import {
 import {
     createProduct,
     deleteProduct,
-    goTo,
     listProducts,
     updateProduct,
     type ProductPayload,
 } from '@/pages/admin/products/lib/products';
+import { goTo } from '../carts/lib/carts';
 
 type PageProps = {
     products: {

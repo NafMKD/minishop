@@ -14,7 +14,8 @@ import {
 import { OrderSearchBar } from '@/pages/admin/orders/components/order-search-bar';
 import { OrderTable } from '@/pages/admin/orders/components/order-table';
 
-import { goTo, listOrders } from '@/pages/admin/orders/lib/orders';
+import { listOrders } from '@/pages/admin/orders/lib/orders';
+import { goTo } from '../carts/lib/carts';
 
 type PageProps = {
     orders: {

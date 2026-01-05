@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/table';
 
 import type { RecentOrder } from '../lib/types';
-import { formatDate, money } from '../lib/format';
+import { formatDate, money } from '@/pages/orders/lib/format';
 
 export function RecentOrdersCard({ orders }: { orders: RecentOrder[] }) {
   return (

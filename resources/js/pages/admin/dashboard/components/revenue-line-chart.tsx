@@ -9,7 +9,7 @@ import {
 } from 'recharts';
 
 import type { OrdersByDayPoint } from '../lib/types';
-import { money } from '../lib/format';
+import { money } from '@/pages/orders/lib/format';
 
 export function RevenueLineChart({ data }: { data: OrdersByDayPoint[] }) {
   if (!data || data.length === 0) {

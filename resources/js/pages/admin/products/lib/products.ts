@@ -43,7 +43,3 @@ export function deleteProduct(productId: number) {
         preserveScroll: true,
     });
 }
-
-export function goTo(url: string) {
-    router.get(url, {}, { preserveState: true, replace: true });
-}

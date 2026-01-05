@@ -11,7 +11,3 @@ export function listOrders(url: string, params: OrderListParams = {}) {
         { preserveState: true, replace: true },
     );
 }
-
-export function goTo(url: string) {
-    router.get(url, {}, { preserveState: true, replace: true });
-}

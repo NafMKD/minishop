@@ -14,6 +14,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { toNumber } from '@/pages/orders/lib/format';
 
 export type CartItem = {
     id: number;
@@ -51,11 +52,6 @@ function statusBadge(status: string) {
     if (status === 'deleted')
         return <Badge variant="destructive">Deleted</Badge>;
     return <Badge variant="outline">{status}</Badge>;
-}
-
-function toNumber(v: string | number) {
-    const n = typeof v === 'number' ? v : Number(v);
-    return Number.isFinite(n) ? n : 0;
 }
 
 export function CartDetailsModal({ open, onOpenChange, cart }: Props) {
