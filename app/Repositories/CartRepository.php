@@ -243,6 +243,8 @@ class CartRepository
      */
     public function checkoutCart(Cart $cart): Order
     {
+        $cart->loadMissing(['items.product']);
+
         if ($cart->status !== Controller::_CART_STATUSES[0]) {
             throw new RepositoryException('Only active carts can be checked out.');
         }
@@ -254,14 +256,18 @@ class CartRepository
         $orderRepository = new OrderRepository();
 
         return DB::transaction(function () use ($orderRepository, $cart) {
+            $cart->lockForUpdate();
+
             $this->markAsOrdered($cart);
+
+            $totalAmount = $cart->items->sum(
+                fn(CartItem $item) => $item->quantity * $item->product->price
+            );
 
             $data = [
                 'user_id' => $cart->user_id,
                 'cart_id' => $cart->id,
-                'total_amount' => $cart->items->sum(function (CartItem $item) {
-                    return $item->quantity * $item->product->price;
-                }),
+                'total_amount' => $totalAmount,
             ];
 
             $order = $orderRepository->create($data);

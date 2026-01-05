@@ -43,7 +43,7 @@ export function CartItemCard({ item }: { item: CartItem }) {
       try {
         await updateCartItemQuantity(item.product.id, safeQty);
       } catch {
-        //  toast 
+        //  TODO: show error to user 
       }
     },
     [outOfStock, maxQty, item.product.id, item.quantity]

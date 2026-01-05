@@ -15,7 +15,6 @@ export function OrdersInfiniteList({ initial }: { initial: Paginated<Order> }) {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const fetchedUrlsRef = useRef<Set<string>>(new Set());
 
-  // modal state
   const [selected, setSelected] = useState<Order | null>(null);
   const [open, setOpen] = useState(false);
 

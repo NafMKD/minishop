@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Exceptions\RepositoryException;
+use App\Jobs\SendLowStockAlert;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Order;
@@ -164,13 +165,25 @@ class OrderRepository
             'unit_price' => $product->price,
         ]);
 
-        // Update stock (simple version)
+        $before = (int) $product->stock_quantity;
+
         $product->update([
             'stock_quantity' => $product->stock_quantity - $quantity,
         ]);
 
-        if ($product->stock_quantity <= $product->low_stock_threshold) {
-            // TODO: notification
+        $after = (int) $product->stock_quantity;
+
+        $crossedIntoLow =
+            $before > $product->low_stock_threshold &&
+            $after <= $product->low_stock_threshold;
+        
+        $notNotifiedYet = $product->low_stock_notified_at === null;
+
+        if ($crossedIntoLow && $notNotifiedYet) {
+            $product->update([
+                'low_stock_notified_at' => now(),
+            ]);
+            SendLowStockAlert::dispatch($product);
         }
     }
 }

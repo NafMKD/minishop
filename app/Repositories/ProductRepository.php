@@ -129,12 +129,16 @@ class ProductRepository
         $storedPaths = [];
 
         try {
+            $before = (int) $product->stock_quantity;
+
             $product->update([
                 'name' => $data['name'] ?? $product->name,
                 'price' => $data['price'] ?? $product->price,
                 'stock_quantity' => $data['stock_quantity'] ?? $product->stock_quantity,
                 'low_stock_threshold' => $data['low_stock_threshold'] ?? $product->low_stock_threshold,
             ]);
+
+            $after = (int) $product->stock_quantity;
 
             if (!empty($data['files'])) {
                 foreach ($product->images as $image) {
@@ -152,6 +156,12 @@ class ProductRepository
                         'sort_order' => $index,
                     ]);
                 }
+            }
+
+            if ($before <= $product->low_stock_threshold && $after > $product->low_stock_threshold) {
+                $product->update([
+                    'low_stock_notified_at' => null,
+                ]);
             }
 
             DB::commit();
