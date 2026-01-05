@@ -38,6 +38,8 @@ class ProductRepository
     /**
      * Get for welcome page
      * 
+     * @param string $search
+     * @return Paginator
      */
     public function getForWelcomePage(string $search): Paginator
     {

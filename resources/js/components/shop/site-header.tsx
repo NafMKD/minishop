@@ -6,8 +6,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { login, logout, register } from '@/routes';
-import { carts } from '@/routes/';
+import { carts, login, logout, orders, register } from '@/routes';
 import { dashboard } from '@/routes/admin';
 import { Link } from '@inertiajs/react';
 import {
@@ -92,7 +91,7 @@ export function SiteHeader({
                 ) : (
                     <div className="flex items-center gap-3">
                         <Button asChild variant="ghost" className="gap-2">
-                            <Link href="#">
+                            <Link href={orders()}>
                                 <ShoppingBag className="h-4 w-4" />
                                 Orders
                             </Link>

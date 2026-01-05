@@ -7,6 +7,7 @@ use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -50,6 +51,26 @@ class OrderRepository
         $query->orderByDesc('created_at');
 
         return $perPage ? $query->paginate($perPage) : $query->get();
+    }
+
+    /**
+     * Get all orders for a specific user.
+     * 
+     * @param User $user
+     * @return Collection|LengthAwarePaginator
+     */
+    public function allForUser(User $user): Collection|LengthAwarePaginator
+    {
+        $orders = Order::query()
+            ->where('user_id', $user->id)
+            ->with([
+                'items:id,order_id,product_id,quantity,unit_price',
+                'items.product:id,name,price',
+                'items.product.images:id,product_id,path',
+            ])
+            ->orderByDesc('created_at');
+
+        return $orders->paginate(12);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CartController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\OrderController as UserOrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\CartController as UserCartController;
 use App\Http\Controllers\WelcomeController;
@@ -29,11 +30,17 @@ Route::middleware(['auth', 'role:admin', 'verified'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:user', 'verified'])->group(function () {
-    Route::get('carts', [UserCartController::class, 'getUserActiveCart'])->name('carts');
-    Route::post('carts/checkout', [UserCartController::class, 'checkOutActiveCart'])->name('carts.checkout');
-    Route::post('carts/{product}', [UserCartController::class, 'addItemToCart'])->name('carts.addItem');
-    Route::put('carts/items/{product}', [UserCartController::class, 'addItemToCart'])->name('carts.updateItem');
-    Route::delete('carts/items/{product}', [UserCartController::class, 'removeItemToCart'])->name('carts.removeItem');
+    // User Cart Routes
+    Route::prefix('carts')->group(function () {
+        Route::get('carts', [UserCartController::class, 'getUserActiveCart'])->name('carts');
+        Route::post('carts/checkout', [UserCartController::class, 'checkOutActiveCart'])->name('carts.checkout');
+        Route::post('carts/{product}', [UserCartController::class, 'addItemToCart'])->name('carts.addItem');
+        Route::put('carts/items/{product}', [UserCartController::class, 'addItemToCart'])->name('carts.updateItem');
+        Route::delete('carts/items/{product}', [UserCartController::class, 'removeItemToCart'])->name('carts.removeItem');
+    });
+
+    // User Orders Routes
+    Route::get('orders', [UserOrderController::class, 'index'])->name('orders');
 });
 
 require __DIR__ . '/settings.php';
