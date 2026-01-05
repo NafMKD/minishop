@@ -1,4 +1,3 @@
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -24,7 +23,6 @@ export function OrderCard({
                                     ? `#${order.number}`
                                     : `#${order.id}`}
                             </div>
-                            <Badge variant="default">Approved</Badge>
                         </div>
 
                         <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">

@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/table';
 import { MoreHorizontal } from 'lucide-react';
 import type { Order } from './order-details-modal';
+import { formatDate } from '@/pages/orders/lib/format';
 
 type Props = {
     orders: Order[];
@@ -48,7 +49,7 @@ export function OrderTable({ orders, onView }: Props) {
                                 <TableCell>{o.user?.name ?? '—'}</TableCell>
                                 <TableCell>{o.user?.email ?? '—'}</TableCell>
                                 <TableCell>{o.total_amount ?? '—'}</TableCell>
-                                <TableCell>{o.created_at ?? '—'}</TableCell>
+                                <TableCell>{formatDate(o.created_at) ?? '—'}</TableCell>
 
                                 <TableCell className="text-right">
                                     <DropdownMenu>

@@ -1,4 +1,3 @@
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -34,7 +33,6 @@ export function OrderDetailsModal({
             <span>
               Order {order.number ? `#${order.number}` : `#${order.id}`}
             </span>
-            <Badge variant="default">Approved</Badge>
           </DialogTitle>
         </DialogHeader>
 

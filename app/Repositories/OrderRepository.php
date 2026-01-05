@@ -26,7 +26,8 @@ class OrderRepository
     {
         $query = Order::with([
             'user:id,name,email',
-            'items'
+            'items',
+            'items.product:id,name',
         ]);
 
         if (!empty($filters['status'])) {
