@@ -1,36 +1,75 @@
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
-import { dashboard } from '@/routes/admin';
-import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
+import { dashboard as dashboardRoute } from '@/routes/admin';
+import type { BreadcrumbItem } from '@/types';
+import { Head, usePage } from '@inertiajs/react';
+
+import { ShoppingCart, DollarSign, Package, Users } from 'lucide-react';
+
+import type { DashboardCounts, DashboardProps } from '@/pages/admin/dashboard/lib/types';
+import { money } from '@/pages/admin/dashboard/lib/format';
+
+import { KpiCard } from '@/pages/admin/dashboard/components/kpi-card';
+import { RevenueTrendCard } from '@/pages/admin/dashboard/components/revenue-trend-card';
+import { RecentOrdersCard } from '@/pages/admin/dashboard/components/recent-orders-card';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard().url,
-    },
+  { title: 'Dashboard', href: dashboardRoute().url },
 ];
 
 export default function Dashboard() {
-    return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                </div>
-                <div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
-                    <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                </div>
-            </div>
-        </AppLayout>
-    );
+  const { props } = usePage<DashboardProps>();
+
+  const counts: DashboardCounts = props.dashboard?.counts ?? {
+    orders: 0,
+    revenue: 0,
+    products: 0,
+    customers: 0,
+  };
+
+  const ordersByDay = props.dashboard?.ordersByDay ?? [];
+  const recentOrders = props.dashboard?.recentOrders ?? [];
+
+  return (
+    <AppLayout breadcrumbs={breadcrumbs}>
+      <Head title="Dashboard" />
+
+      <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+        {/* KPI cards */}
+        <div className="grid gap-4 md:grid-cols-4">
+          <KpiCard
+            title="Total Orders"
+            value={counts.orders.toLocaleString()}
+            hint="All-time"
+            icon={<ShoppingCart className="h-5 w-5 text-muted-foreground" />}
+          />
+          <KpiCard
+            title="Revenue"
+            value={money(counts.revenue)}
+            hint="All-time"
+            icon={<DollarSign className="h-5 w-5 text-muted-foreground" />}
+          />
+          <KpiCard
+            title="Products"
+            value={counts.products.toLocaleString()}
+            hint="Active catalog"
+            icon={<Package className="h-5 w-5 text-muted-foreground" />}
+          />
+          <KpiCard
+            title="Customers"
+            value={counts.customers.toLocaleString()}
+            hint="Registered users"
+            icon={<Users className="h-5 w-5 text-muted-foreground" />}
+          />
+        </div>
+
+        {/* Charts */}
+        <div className="min-h-[420px]">
+          <RevenueTrendCard data={ordersByDay} />
+        </div>
+
+        {/* Recent orders table */}
+        <RecentOrdersCard orders={recentOrders} />
+      </div>
+    </AppLayout>
+  );
 }

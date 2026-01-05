@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\OrderController as UserOrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\CartController as UserCartController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -12,9 +13,7 @@ use Inertia\Inertia;
 Route::get('/', [WelcomeController::class, 'index'])->name('home');
 
 Route::middleware(['auth', 'role:admin', 'verified'])->group(function () {
-    Route::get('admin/dashboard', function () {
-        return Inertia::render('admin/dashboard');
-    })->name('admin.dashboard');
+    Route::get('admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
     // Products
     Route::get('admin/products', [ProductController::class, 'index'])->name('admin.products');
