@@ -4,10 +4,11 @@ import { Separator } from '@/components/ui/separator';
 import { cn, isSameUrl, resolveUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit } from '@/routes/profile';
-import { show } from '@/routes/two-factor';
+// import { show } from '@/routes/two-factor';
 import { edit as editPassword } from '@/routes/user-password';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
+import { ArrowLeft } from 'lucide-react';
 import { type PropsWithChildren } from 'react';
 
 const sidebarNavItems: NavItem[] = [
@@ -21,11 +22,11 @@ const sidebarNavItems: NavItem[] = [
         href: editPassword(),
         icon: null,
     },
-    {
-        title: 'Two-Factor Auth',
-        href: show(),
-        icon: null,
-    },
+    // {
+    //     title: 'Two-Factor Auth',
+    //     href: show(),
+    //     icon: null,
+    // },
     {
         title: 'Appearance',
         href: editAppearance(),
@@ -33,7 +34,11 @@ const sidebarNavItems: NavItem[] = [
     },
 ];
 
-export default function SettingsLayout({ children }: PropsWithChildren) {
+type SettingsLayoutProps = PropsWithChildren<{
+  is_user?: boolean | undefined;
+}>;
+
+export default function SettingsLayout({ children, is_user }: SettingsLayoutProps) {
     // When server-side rendering, we only render the layout on the client...
     if (typeof window === 'undefined') {
         return null;
@@ -43,6 +48,15 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 
     return (
         <div className="px-4 py-6">
+            {is_user && (
+                <Link
+                    href="/"
+                    className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+                >
+                    <ArrowLeft className="h-4 w-4" />
+                    Continue shopping
+                </Link>
+            )}
             <Heading
                 title="Settings"
                 description="Manage your profile and account settings"

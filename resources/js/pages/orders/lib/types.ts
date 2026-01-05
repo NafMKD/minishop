@@ -4,6 +4,8 @@ export type AuthUser = {
   name: string;
   is_admin?: boolean;
   active_cart?: ActiveCart;
+  email: string;
+  email_verified_at: string;
 };
 
 export type OrderItem = {
